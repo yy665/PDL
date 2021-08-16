@@ -314,6 +314,8 @@ object Syntax {
   case class TBitWidthLen(len: Int) extends TBitWidth
   case class TBitWidthAdd(b1: TBitWidth, b2: TBitWidth) extends TBitWidth
   case class TBitWidthMax(b1: TBitWidth, b2: TBitWidth) extends TBitWidth
+  case class TObject(methods :Map[Id, TObjMethod], parent :Option[TObject]) extends Type
+  case class TObjMethod(args :List[Type], ret :Type, lat :Latency) extends Type
 
 
   /**
