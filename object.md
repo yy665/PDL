@@ -16,6 +16,11 @@ of this?
 		 - this would be something of an issue since certain combinational
            things might HAVE to be done combinationally (i.e. won't stick around
            to the next stage)? 
+		 - one approach could be to define another latency for things that are
+           only available for one stage, but that doesn't really make sense as
+		   I'm pretty sure that this is only about reserve + block + use +
+           release all at once. See the lock section about wrapping stuff in an
+           acquired block.
 		 - this would mean that the base lock interface would have to have
            everything asynchronous, which is kinda just stupid.
 		 - there could also be no base lock interface, or at least the latency
@@ -68,7 +73,15 @@ of this?
    cmds;
    lock.release(addr);
    ```
- - This would also be a clearer syntax since it looks
+ - Since this is essentially a new syntax because of certain implementations,
+   are there more options? If this is it, that seems pretty reasonable, but if
+   there are too many different quirks of different implementations the current
+   merging system looks a little more attractive.
+ - The other thing that we might want to do is to keep the acquire function as
+   it is described above, since it is possible that for some implementations
+   reserve + block can be done better all at once.
+ - This would also be a clearer syntax since it looks more like a provision for
+   a region rather than the user having to track down blocks and releases.
  - address based and general locks are just two different things
  - perhaps reads and writes should be pulled out in a different way as well,
    such as
@@ -80,7 +93,8 @@ of this?
    ```
    lock.reserve_read(addr)
    ```
- - this is very long :( could always shorten it to sth like `lock.reserve_r(addr)`
+ - this is very long :( could always shorten it to something like
+   `lock.reserve_r(addr)`
  - in this case should the r/w be encoded in every operation? this seems like it
    would make sense even though it COULD be determined by the compiler.
  - this doesn't really reflect the structure of the lock that well though, as
@@ -94,11 +108,11 @@ of this?
  ^^ on the PDL level
    
 ### FAQueue&lt;regfile&gt;
- - `reserve<comb>(addr, r/w)`
- - `block<comb>(addr)>`
- - `release<comb>(addr)`
- - `read<comd>(addr)`
- - `write<seq>(addr, data)`
+ - `reserve[comb](addr, r/w)`
+ - `block[comb](addr)`
+ - `release[comb](addr)`
+ - `read[comd](addr)`
+ - `write[seq](addr, data)`
  
 ## Extern
 These would just be objects w/ methods as defined above 
